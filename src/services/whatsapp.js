@@ -67,28 +67,24 @@ class WhatsAppService {
                 fs.mkdirSync(sessionDir, { recursive: true });
             }
 
-            // Configure Puppeteer for headless operation
-            const browser = await puppeteer.launch({
-                headless: true,
-                args: [
-                    '--no-sandbox',
-                    '--disable-setuid-sandbox',
-                    '--disable-dev-shm-usage',
-                    '--disable-accelerated-2d-canvas',
-                    '--no-first-run',
-                    '--no-zygote',
-                    '--disable-gpu'
-                ]
-            });
-
-            // Create WhatsApp client
+            // Create WhatsApp client with proper Puppeteer configuration
             this.client = new Client({
                 authStrategy: new LocalAuth({
                     clientId: 'whatsapp-telegram-bot',
                     dataPath: sessionDir
                 }),
                 puppeteer: {
-                    browser: browser
+                    headless: true,
+                    args: [
+                        '--no-sandbox',
+                        '--disable-setuid-sandbox',
+                        '--disable-dev-shm-usage',
+                        '--disable-accelerated-2d-canvas',
+                        '--no-first-run',
+                        '--no-zygote',
+                        '--disable-gpu',
+                        '--single-process'
+                    ]
                 },
                 webVersion: '2.2402.5',
                 webVersionCache: {
