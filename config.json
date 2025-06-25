@@ -1,0 +1,51 @@
+{
+  "whatsapp": {
+    "groups": [
+      "Class Announcements",
+      "Homework Group",
+      "Study Group"
+    ],
+    "batchProcessing": {
+      "enabled": true,
+      "intervalMinutes": 5,
+      "maxMessagesPerBatch": 100
+    },
+    "sessionManagement": {
+      "autoReconnect": true,
+      "reconnectInterval": 30000,
+      "maxReconnectAttempts": 5
+    }
+  },
+  "telegram": {
+    "commands": {
+      "summarize": "/summarize"
+    },
+    "inlineButtons": {
+      "maxGroupsPerPage": 5,
+      "maxDatesPerPage": 7
+    }
+  },
+  "gemini": {
+    "model": "gemini-1.5-flash",
+    "maxTokens": 1000000,
+    "temperature": 0.3,
+    "prompts": {
+      "summarization": "Summarize the following WhatsApp messages in a clear and concise way, highlighting key points, announcements, and important information:",
+      "homeworkExtraction": "Extract homework assignments from the following messages. Format as: Subject - Due Date - Description:"
+    }
+  },
+  "database": {
+    "cleanup": {
+      "enabled": true,
+      "retentionDays": 30,
+      "cleanupIntervalHours": 24
+    }
+  },
+  "logging": {
+    "fileRotation": {
+      "enabled": true,
+      "maxSize": "10m",
+      "maxFiles": 5
+    }
+  }
+} 

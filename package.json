@@ -1,0 +1,52 @@
+{
+  "name": "whatsapp-summary",
+  "version": "1.0.0",
+  "description": "WhatsApp to Telegram Bot with Gemini AI - Automated message processing and summarization system",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "jest",
+    "docker:build": "docker build -t whatsapp-telegram-bot .",
+    "docker:run": "docker-compose up -d",
+    "docker:stop": "docker-compose down"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dansimah/whatsapp-summary.git"
+  },
+  "keywords": [
+    "whatsapp",
+    "telegram",
+    "bot",
+    "gemini",
+    "ai",
+    "summarization",
+    "automation"
+  ],
+  "author": "dansi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dansimah/whatsapp-summary/issues"
+  },
+  "homepage": "https://github.com/dansimah/whatsapp-summary#readme",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "dotenv": "^16.5.0",
+    "moment": "^2.30.1",
+    "node-cron": "^4.1.1",
+    "node-telegram-bot-api": "^0.66.0",
+    "puppeteer": "^24.10.2",
+    "qrcode-terminal": "^0.12.0",
+    "sqlite3": "^5.1.7",
+    "whatsapp-web.js": "^1.30.0",
+    "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "jest": "^30.0.3",
+    "nodemon": "^3.1.10"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
