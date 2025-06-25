@@ -87,4 +87,8 @@ async function shutdown() {
     }
 }
 
-main(); 
+// Start the application
+main().catch(error => {
+    logger.error('Fatal error during startup', error);
+    process.exit(1);
+}); 
