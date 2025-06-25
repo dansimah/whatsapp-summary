@@ -77,7 +77,24 @@ class WhatsAppService {
                     '--disable-accelerated-2d-canvas',
                     '--no-first-run',
                     '--no-zygote',
-                    '--disable-gpu'
+                    '--disable-gpu',
+                    '--disable-background-timer-throttling',
+                    '--disable-backgrounding-occluded-windows',
+                    '--disable-renderer-backgrounding',
+                    '--disable-features=TranslateUI',
+                    '--disable-ipc-flooding-protection',
+                    '--disable-default-apps',
+                    '--disable-extensions',
+                    '--disable-plugins',
+                    '--disable-sync',
+                    '--disable-translate',
+                    '--hide-scrollbars',
+                    '--mute-audio',
+                    '--no-default-browser-check',
+                    '--safebrowsing-disable-auto-update',
+                    '--disable-web-security',
+                    '--disable-features=VizDisplayCompositor',
+                    '--single-process'
                 ]
             });
 
