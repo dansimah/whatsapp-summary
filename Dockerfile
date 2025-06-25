@@ -27,6 +27,9 @@ RUN npm ci --only=production
 # Copy application code
 COPY . .
 
+# Create necessary directories
+RUN mkdir -p /app/data /app/logs /app/sessions
+
 # Set proper permissions
 RUN chown -R node:node /app
 
