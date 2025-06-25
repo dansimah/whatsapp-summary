@@ -1,4 +1,4 @@
-# WhatsApp to Telegram Bot with Gemini AI: Project Overview
+# WhatsApp to Telegram Bot with Gemini AI: Project Quick Overview
 
 This document outlines the detailed plan for developing an automated system that bridges communication from WhatsApp groups to a personalized Telegram bot. The core functionality revolves around intelligently processing WhatsApp messages using Google's Gemini AI and providing on-demand summaries and specific information (like homework assignments) via a Telegram interface.
 
