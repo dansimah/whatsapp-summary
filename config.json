@@ -1,10 +1,5 @@
 {
   "whatsapp": {
-    "groups": [
-      "Class Announcements",
-      "Homework Group",
-      "Study Group"
-    ],
     "batchProcessing": {
       "enabled": true,
       "intervalMinutes": 5,
@@ -17,6 +12,9 @@
     }
   },
   "telegram": {
+    "allowedUsers": [
+      "sim_dan"
+    ],
     "commands": {
       "summarize": "/summarize"
     },
@@ -30,7 +28,7 @@
     "maxTokens": 1000000,
     "temperature": 0.3,
     "prompts": {
-      "summarization": "Summarize the following WhatsApp messages in a clear and concise way, highlighting key points, announcements, and important information:",
+      "summarization": "Analyze the following WhatsApp messages and create a comprehensive summary.\n\nCRITICAL LANGUAGE INSTRUCTION: You MUST respond in the same language as the majority of the messages. If the messages are in Hebrew, respond in Hebrew. If the messages are in French, respond in French. If the messages are in Arabic, respond in Arabic. Only use English if the messages are primarily in English.\n\nStructure your summary as follows:\n1. Identify the main topics discussed\n2. For each topic, specify how many messages were about that topic\n3. Include key details, announcements, and important information\n4. Use bullet points for clarity\n\nExample format for Hebrew:\n• הפסקת חשמל - אמורה להיות מתוקנת ב-15:40 (15 הודעות)\n• הודעות על תקנות חניה חדשות (8 הודעות)\n• תכנון אירוע קהילתי לשבוע הבא (12 הודעות)\n\nExample format for French:\n• Coupure d'électricité - devrait être réparée à 15h40 (15 messages)\n• Nouvelles réglementations de stationnement annoncées (8 messages)\n• Planification d'événement communautaire pour la semaine prochaine (12 messages)\n\nExample format for English:\n• Electricity shutdown - should be fixed at 15:40 (15 messages)\n• New parking regulations announced (8 messages)\n• Community event planning for next week (12 messages)\n\nFocus on practical information that people need to know. IMPORTANT: Match the language of the input messages exactly.",
       "homeworkExtraction": "Extract homework assignments from the following messages. Format as: Subject - Due Date - Description:"
     }
   },
@@ -42,10 +40,54 @@
     }
   },
   "logging": {
+    "level": "debug",
+    "filePath": "logs/app.log",
     "fileRotation": {
       "enabled": true,
       "maxSize": "10m",
       "maxFiles": 5
+    },
+    "telegram": {
+      "enabled": true,
+      "enabledLevels": [
+        "debug",
+        "warn",
+        "error"
+      ],
+      "enabledServices": [
+        "*"
+      ],
+      "serviceFilters": {
+        "whatsapp": [
+          "warn",
+          "error"
+        ],
+        "telegram": [
+          "debug",
+          "warn",
+          "error"
+        ],
+        "gemini": [
+          "debug",
+          "warn",
+          "error"
+        ],
+        "database": [
+          "debug",
+          "warn",
+          "error"
+        ]
+      },
+      "maxMessageLength": 4000,
+      "includeDebug": true,
+      "rateLimiting": {
+        "delayBetweenMessages": 3000,
+        "batchSize": 2,
+        "batchTimeout": 10000
+      }
     }
+  },
+  "app": {
+    "nodeEnv": "development"
   }
-} 
+}

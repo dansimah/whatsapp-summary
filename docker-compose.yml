@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  whatsapp-summary-bot:
+    build: .
+    container_name: whatsapp-summary-bot
+    restart: unless-stopped
+    
+    # Environment variables
+    env_file:
+      - .env
+    
+    # Volume mounts for persistent data
+    volumes:
+      # Database and application data
+      - ./data:/app/data
+      # Logs
+      - ./logs:/app/logs
+      # WhatsApp sessions (important for authentication persistence)
+      - ./sessions:/app/sessions
+      # Configuration (optional - allows config changes without rebuild)
+      - ./config.json:/app/config.json:ro
+    
+    # Network configuration
+    networks:
+      - whatsapp-bot-network
+    
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+        reservations:
+          memory: 512M
+          cpus: '0.25'
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "node", "-e", "console.log('Health check passed')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  whatsapp-bot-network:
+    driver: bridge 

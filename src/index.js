@@ -35,10 +35,24 @@ async function main() {
         await telegramService.initialize();
         logger.info('Telegram bot initialized');
 
-        // Wire up WhatsApp status reporting to Telegram status group
-        whatsappService.setStatusCallback(async (statusMsg) => {
-            await telegramService.sendStatusUpdate(statusMsg);
-        });
+        // Connect logger to Telegram for important log messages
+        logger.setTelegramService(telegramService);
+
+        // Configure Telegram logging with granular control
+        const telegramLogConfig = config.get('logging.telegram');
+        if (telegramLogConfig && telegramLogConfig.enabled) {
+            logger.configureTelegramLogging({
+                enabledLevels: telegramLogConfig.enabledLevels || ['error', 'warn'],
+                enabledServices: telegramLogConfig.enabledServices || ['*'],
+                serviceFilters: telegramLogConfig.serviceFilters || {},
+                maxMessageLength: telegramLogConfig.maxMessageLength || 4000,
+                rateLimiting: telegramLogConfig.rateLimiting || {
+                    delayBetweenMessages: 1000,
+                    batchSize: 5,
+                    batchTimeout: 5000
+                }
+            });
+        }
 
         // Initialize WhatsApp client
         await whatsappService.initialize();

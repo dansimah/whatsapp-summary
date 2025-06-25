@@ -242,6 +242,22 @@ class DatabaseService {
 
         try {
             const messages = await this.all(sql, [groupName, startDate, endDate]);
+            
+            // Debug: Log messages retrieved
+            logger.database('DEBUG: Messages retrieved by group and date', { 
+                groupName, 
+                startDate, 
+                endDate, 
+                count: messages.length,
+                messageIds: messages.map(m => m.id).slice(0, 5),
+                sampleMessages: messages.slice(0, 3).map(m => ({
+                    id: m.id,
+                    sender: m.sender_name,
+                    content: m.content ? m.content.substring(0, 50) + '...' : 'empty',
+                    timestamp: m.timestamp
+                }))
+            });
+            
             logger.database('Retrieved messages by group and date', { 
                 groupName, startDate, endDate, count: messages.length 
             });
@@ -313,6 +329,23 @@ class DatabaseService {
     }
 
     /**
+     * Get message by WhatsApp message ID
+     * @param {string} waMessageId - WhatsApp message ID
+     * @returns {Promise<Object|null>} Message object or null
+     */
+    async getMessageByWhatsAppId(waMessageId) {
+        const sql = 'SELECT * FROM messages WHERE wa_message_id = ?';
+        
+        try {
+            const message = await this.get(sql, [waMessageId]);
+            return message;
+        } catch (error) {
+            logger.error('Error retrieving message by WhatsApp ID', { waMessageId, error });
+            throw error;
+        }
+    }
+
+    /**
      * Clean up old messages based on retention policy
      * @returns {Promise<Object>} Cleanup result
      */
@@ -359,6 +392,91 @@ class DatabaseService {
      */
     isReady() {
         return this.isInitialized && this.db;
+    }
+
+    /**
+     * Delete summary for a group and date
+     * @param {string} groupName - Group name
+     * @param {string} date - Date (YYYY-MM-DD)
+     * @returns {Promise<Object>} Delete result
+     */
+    async deleteSummary(groupName, date) {
+        const sql = 'DELETE FROM summaries WHERE group_name = ? AND date = ?';
+        
+        try {
+            const result = await this.run(sql, [groupName, date]);
+            logger.database('Summary deleted successfully', { groupName, date, deletedCount: result.changes });
+            return result;
+        } catch (error) {
+            logger.error('Error deleting summary', { groupName, date, error });
+            throw error;
+        }
+    }
+
+    /**
+     * Clear all summaries (for testing purposes)
+     * @returns {Promise<Object>} Clear result
+     */
+    async clearAllSummaries() {
+        const sql = 'DELETE FROM summaries';
+        
+        try {
+            const result = await this.run(sql);
+            logger.database('All summaries cleared successfully', { deletedCount: result.changes });
+            return result;
+        } catch (error) {
+            logger.error('Error clearing all summaries', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Get the most recent message for a specific group
+     * @param {string} groupName - Name of the group
+     * @returns {Promise<Object>} Most recent message or null
+     */
+    async getLastMessageForGroup(groupName) {
+        const sql = `
+            SELECT * FROM messages 
+            WHERE chat_name = ? AND is_group = 1
+            ORDER BY timestamp DESC 
+            LIMIT 1
+        `;
+        
+        try {
+            const message = await this.get(sql, [groupName]);
+            return message;
+        } catch (error) {
+            logger.error('Error getting last message for group', { groupName, error: error.message });
+            return null;
+        }
+    }
+
+    /**
+     * Get all groups with their last message timestamps, ordered by most recent
+     * @returns {Promise<Array>} Array of groups with last message info
+     */
+    async getGroupsWithLastMessage() {
+        const sql = `
+            SELECT 
+                m.chat_name as name,
+                m.chat_id as id,
+                MAX(m.timestamp) as last_message_time,
+                COUNT(m.id) as message_count
+            FROM messages m
+            WHERE m.is_group = 1
+            GROUP BY m.chat_name, m.chat_id
+            ORDER BY last_message_time DESC
+        `;
+        
+        try {
+            const groups = await this.all(sql);
+            logger.database('Retrieved groups with last message timestamps', { count: groups.length });
+            return groups;
+        } catch (error) {
+            logger.error('Error getting groups with last message', error);
+            return [];
+        }
     }
 }
 

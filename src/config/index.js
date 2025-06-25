@@ -44,6 +44,7 @@ class ConfigManager {
                 botToken: process.env.TELEGRAM_BOT_TOKEN,
                 statusGroupId: process.env.TELEGRAM_STATUS_GROUP_ID,
                 allowedUsername: process.env.TELEGRAM_ALLOWED_USERNAME || 'dansi',
+                logAllInteractions: process.env.TELEGRAM_LOG_ALL_INTERACTIONS === 'true',
                 ...appConfig.telegram
             },
             gemini: {

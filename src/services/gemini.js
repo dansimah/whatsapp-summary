@@ -91,14 +91,40 @@ class GeminiService {
 
             await this.applyRateLimit();
 
+            // Debug: Log messages received by Gemini
+            logger.gemini('DEBUG: Messages received for summary generation', {
+                groupName,
+                date,
+                messageCount: messages.length,
+                messageIds: messages.map(m => m.id || m.wa_message_id).slice(0, 5),
+                totalContentLength: messages.reduce((sum, m) => sum + (m.content ? m.content.length : 0), 0),
+                sampleContents: messages.slice(0, 3).map(m => ({
+                    id: m.id || m.wa_message_id,
+                    content: m.content ? m.content.substring(0, 100) + '...' : 'empty',
+                    sender: m.sender_name
+                }))
+            });
+
             // Format messages for the prompt
             const formattedMessages = this.formatMessagesForPrompt(messages);
             
-            // Create the prompt
-            const basePrompt = config.get('gemini.prompts.summarization') || 
-                'Summarize the following WhatsApp messages in a clear and concise way, highlighting key points, announcements, and important information:';
+            // Debug: Log formatted messages
+            logger.gemini('DEBUG: Formatted messages for prompt', {
+                formattedLength: formattedMessages.length,
+                preview: formattedMessages.substring(0, 500) + '...'
+            });
             
-            const fullPrompt = `${basePrompt}\n\nGroup: ${groupName}\nDate: ${date}\n\nMessages:\n${formattedMessages}`;
+            // Create the prompt with enhanced instructions
+            const basePrompt = config.get('gemini.prompts.summarization') || 
+                'Analyze the following WhatsApp messages and create a comprehensive summary. IMPORTANT: Respond in the same language as the majority of the messages (Hebrew, French, English, etc.).\n\nStructure your summary as follows:\n1. Identify the main topics discussed\n2. For each topic, specify how many messages were about that topic\n3. Include key details, announcements, and important information\n4. Use bullet points for clarity\n\nExample format:\n• Electricity shutdown - should be fixed at 15:40 (15 messages)\n• New parking regulations announced (8 messages)\n• Community event planning for next week (12 messages)\n\nFocus on practical information that people need to know.';
+            
+            const fullPrompt = `${basePrompt}\n\nGroup: ${groupName}\nDate: ${date}\nTotal Messages: ${messages.length}\n\nMessages:\n${formattedMessages}`;
+
+            // Debug: Log full prompt
+            logger.gemini('DEBUG: Full prompt for Gemini', {
+                promptLength: fullPrompt.length,
+                promptPreview: fullPrompt.substring(0, 1000) + '...'
+            });
 
             logger.gemini('Generating summary', { 
                 groupName, 
@@ -114,6 +140,13 @@ class GeminiService {
             if (!summary || summary.trim().length === 0) {
                 throw new Error('Empty response from Gemini AI');
             }
+
+            // Debug: Log Gemini response
+            logger.gemini('DEBUG: Gemini response received', {
+                responseLength: summary.length,
+                responsePreview: summary.substring(0, 300) + '...',
+                fullResponse: summary
+            });
 
             logger.gemini('Summary generated successfully', { 
                 groupName, 
@@ -211,8 +244,9 @@ class GeminiService {
             const sender = msg.sender_name || 'Unknown';
             const content = msg.content || '';
             
+            // Add message number for better reference
             return `${index + 1}. [${timestamp}] ${sender}: ${content}`;
-        }).join('\n');
+        }).join('\n\n');
     }
 
     /**
