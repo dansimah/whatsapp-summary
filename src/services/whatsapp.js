@@ -70,6 +70,7 @@ class WhatsAppService {
             // Configure Puppeteer for headless operation
             const browser = await puppeteer.launch({
                 headless: true,
+                executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium-browser',
                 args: [
                     '--no-sandbox',
                     '--disable-setuid-sandbox',
@@ -94,7 +95,23 @@ class WhatsAppService {
                     '--safebrowsing-disable-auto-update',
                     '--disable-web-security',
                     '--disable-features=VizDisplayCompositor',
-                    '--single-process'
+                    '--disable-background-networking',
+                    '--disable-component-extensions-with-background-pages',
+                    '--disable-domain-reliability',
+                    '--disable-features=AudioServiceOutOfProcess',
+                    '--disable-hang-monitor',
+                    '--disable-prompt-on-repost',
+                    '--disable-sync-preferences',
+                    '--disable-threaded-animation',
+                    '--disable-threaded-scrolling',
+                    '--disable-web-resources',
+                    '--enable-automation',
+                    '--force-color-profile=srgb',
+                    '--metrics-recording-only',
+                    '--no-crash-upload',
+                    '--no-pings',
+                    '--password-store=basic',
+                    '--use-mock-keychain'
                 ]
             });
 
